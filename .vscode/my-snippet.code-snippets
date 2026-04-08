@@ -1,0 +1,88 @@
+{
+	// Place your eye-care-web workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	//
+	// You can also restrict snippets to specific files using include/exclude patterns:
+	// "Test snippet": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "test",
+	// 	"body": "test('$1', () => {\n\t$0\n});",
+	// 	"include": ["**/*.test.ts", "*.spec.ts"],
+	// 	"exclude": ["**/temp/*.ts"],
+	// 	"description": "Insert test block"
+	// }
+	"Provider Template": {
+		"scope": "javascriptreact,typescriptreact",
+		"prefix": "context-provider",
+		"body": [
+			"import { LayoutProp } from '@/types/LayoutProp';",
+			"import { createContext, useContext } from 'react';",
+			"",
+			"type $1ContextType = {",
+			"\t$2",
+			"}",
+			"",
+			"const $1Context = createContext<$1ContextType|undefined>(undefined);",
+			"",
+			"export function $1Provider({children}: LayoutProp) {",
+			"\t$3",
+			"\t",
+			"\treturn (",
+			"\t\t<$1Context.Provider value={{$4}}>",
+			"\t\t\t{children}",
+			"\t\t</$1Context.Provider>",
+			"\t)",
+			"\t",
+			"}",
+			"",
+			"export default function use$1() {",
+			"\tconst context = useContext($1Context);",
+			"\tif(!context) throw new Error(\"'use$1' must be used inside of '$1Provider'\")",
+			"\treturn context;",
+			"}",
+		]
+	},
+	"Try And Catch": {
+		"scope": "javascriptreact,javascript,typescriptreact,typescript",
+		"prefix": "try-catch",
+		"body": [
+			"try {",
+			"\t$1",
+			"} catch (e) {",
+			"\t$2",
+			"}",
+		]
+	},
+	"Try And Catch Finally": {
+		"scope": "javascriptreact,javascript,typescriptreact,typescript",
+		"prefix": "try-catch-finally",
+		"body": [
+			"try {",
+			"\t$1",
+			"} catch (e) {",
+			"\t$2",
+			"}",
+			"} finally {",
+			"\t$3",
+			"}",
+		]
+	},
+	"File Name": {
+		"prefix": "filename",
+		"body": "${1:${TM_FILENAME_BASE}}"
+	}
+}

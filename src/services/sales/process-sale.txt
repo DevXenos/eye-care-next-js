@@ -1,0 +1,91 @@
+"use client";
+
+import { db } from "@/libs/firebaseClientConfig";
+import {
+	collection,
+	doc,
+	writeBatch,
+	increment,
+	serverTimestamp
+} from "firebase/firestore";
+
+import { SalesType } from "@/types/SalesType";
+import { CartType } from "@/types/POSTypes";
+import { StockHistoryType } from "@/types/StockHistoryTypes";
+import { generateProductId, generateSaleId, generateStockHistoryId } from "@/utils/IdGenerator";
+
+export default async function processSale(data: Omit<SalesType, 'id' | 'createdAt'> & {
+	paymentAmount: number;
+	paymentMethod: SalesType[''];
+}) {
+	const batch = writeBatch(db);
+
+	const salesRef = collection(db, "sales");
+	const historyRef = collection(db, "stock-history");
+	const productsRef = collection(db, "products");
+
+	// Generate sale ID
+	const saleId = generateSaleId();
+	const saleDoc = doc(salesRef, saleId);
+
+	// Map carts to ensure each cart item has ID and subtotal
+	const cartsWithIds: CartType[] = data.carts.map((item) => ({
+		...item,
+		id: generateCartItemId(),
+		subtotal: item.price * item.quantity,
+	}));
+
+	const totalAmount = cartsWithIds.reduce((sum, i) => sum + i.subtotal!, 0);
+	const change = data.paymentAmount - totalAmount;
+
+	// 1️⃣ Create sale document
+	batch.set(saleDoc, {
+		id: saleId,
+		customerName: data.customerName,
+		carts: cartsWithIds,
+		totalAmount,
+		paymentAmount: data.paymentAmount,
+		change,
+		paymentMethod: data.paymentMethod,
+		createdAt: serverTimestamp(),
+	});
+
+	// 2️⃣ Process each cart item
+	cartsWithIds.forEach((item) => {
+		const productDoc = doc(productsRef, item.productId);
+
+		// Generate stock history ID manually
+		const historyId = generateStockHistoryId();
+		const historyDoc = doc(historyRef, historyId);
+
+		// Reduce stock
+		batch.update(productDoc, {
+			stockQuantity: increment(-item.quantity)
+		});
+
+		// Record stock history
+		batch.set(historyDoc, {
+			id: historyId, // manual ID with SH-
+			product: {
+				id: item.productId,
+				name: item.name,
+			},
+			quantity: -item.quantity,
+			source: {
+				type: "pos",
+				saleId,
+			},
+			createdAt: Date.now(),
+		} as StockHistoryType);
+	});
+
+	// 3️⃣ Commit batch
+	await batch.commit();
+
+	return {
+		success: true,
+		saleId,
+		totalAmount,
+		change,
+	};
+}
