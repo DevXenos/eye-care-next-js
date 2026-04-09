@@ -1,14 +1,14 @@
 "use client"
 
-import SalesPrintView, { SalesPrintPage } from '../__components/SalesPrintView';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { SalesPrintPage } from '../__components/SalesPrintView';
 import { SalesType } from '@/types/SalesType';
-import { useAdmin } from '../../AdminWrapper';
+import useAdminAccount from '@/stores/currentUserStore';
 import { useProfile } from '@/stores/profileStore';
 
 export default function PrintPage() {
-	const currentAdmin = useAdmin();
+	const {currentAdmin} = useAdminAccount();
 	const { profile } = useProfile(currentAdmin.uid);
 	const [sales, setSales] = useState<SalesType[]>([]);
 
