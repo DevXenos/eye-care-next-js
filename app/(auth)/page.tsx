@@ -1,27 +1,29 @@
 "use client"
 
 import { Box, Button, TextField, Typography } from '@mui/material';
+import { FIREBASE_ADMIN_LOADING, FIREBASE_ADMIN_SUCCESS } from '@/constants/firebaseMessages';
+import { SubmitEvent, useTransition } from 'react';
 
 import loginUser from '@/services/current-user/login-user';
 import { toast } from 'sonner';
-import { useTransition } from 'react';
-import { verifySessionToken } from '@/actions/admin';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+	const router = useRouter();
 	const [isLoading, startTransition] = useTransition();
 
-	const formAction = (formData: FormData) => {
+	const formAction = (e: SubmitEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const formData = new FormData(e.target)
+
 		startTransition(() => {
 			toast.promise(
-				loginUser(formData).then(async () => {
-					return verifySessionToken();
+				loginUser(formData).then(() => {
+					router.push('/dashboard/overview')
 				}),
 				{
-					loading: "Authenticating",
-					success: (admin) => {
-						if (!admin) throw new Error("Failed to login. Please try again");
-						return `Login Successfully as ${admin.email}`
-					},
+					loading: FIREBASE_ADMIN_LOADING['authentication'],
+					success: FIREBASE_ADMIN_SUCCESS['authentication'],
 					error: (e) => {
 						return (e as Error).message
 					}
@@ -41,7 +43,7 @@ export default function Home() {
 
 			<Box
 				component={'form'}
-				action={formAction}
+				onSubmit={formAction}
 				sx={{
 					width: "100%",
 					maxWidth: "500px",
@@ -67,6 +69,7 @@ export default function Home() {
 				</Typography>
 
 				<TextField
+					required
 					label="Email"
 					placeholder="Enter your Email"
 					name="email"
@@ -74,6 +77,7 @@ export default function Home() {
 				/>
 
 				<TextField
+					required
 					label="Password"
 					placeholder="Enter your Password"
 					name="password"

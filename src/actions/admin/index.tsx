@@ -42,8 +42,7 @@ export async function saveSession(idToken: string): Promise<ResultType> {
 	}
 }
 
-export async function verifySessionToken(sessionToken?: string) {
-	
+export async function verifySessionToken(sessionToken: string|undefined) {
 	try {
 		if (!sessionToken) {
 			return null;

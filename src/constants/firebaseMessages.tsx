@@ -9,10 +9,12 @@ export type FirebaseAdminErrorKeys =
 	| "not-found"
 	| "already-exists"
 	| "deadline-exceeded"
+	| "auth/wrong-password"
 	| "default";
 
 export const FIREBASE_ADMIN_ERROR: Record<FirebaseAdminErrorKeys, string> = {
-	"auth/user-not-found": "No user found with this UID or email.",
+	"auth/user-not-found": "Invalid email or password. Please try again.",
+	"auth/wrong-password": "Invalid email or password. Please try again.",
 	"auth/user-disabled": "This user account has been disabled.",
 	"auth/email-already-exists": "The email address is already in use by another account.",
 	"auth/operation-not-allowed": "Operation not allowed. Please contact admin.",
