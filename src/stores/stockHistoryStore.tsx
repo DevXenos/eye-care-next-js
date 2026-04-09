@@ -18,7 +18,8 @@ export const stockHistoryStore = create<StockHistoryStoreState>((set) => ({
 }));
 
 export function useStockHistory() {
-	const { histories, setHistories } = stockHistoryStore.getState();
+	const histories = stockHistoryStore((s) => s.histories);
+	const setHistories = stockHistoryStore((s) => s.setHistories);
 
 	useEffect(() => {
 		// 1. Create a query to get history sorted by creation time (Newest first)

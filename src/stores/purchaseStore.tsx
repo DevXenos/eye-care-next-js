@@ -19,7 +19,8 @@ export const purchaseStore = create<PurchaseStore>((set) => ({
 }))
 
 export function usePurchase() {
-	const { purchases, setPurchases } = purchaseStore.getState();
+	const purchases = purchaseStore((s) => s.purchases);
+	const setPurchases = purchaseStore((s) => s.setPurchases);
 
 	useEffect(() => {
 		const q = query(collection(db, COLLECTIONS.PURCHASE));

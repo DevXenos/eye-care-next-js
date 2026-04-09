@@ -7,7 +7,7 @@ import { dateFormats, dateFormatsSample } from "@/types/ProfileType";
 import { CamelCase } from "@/utils/camelCase";
 import Link from "next/link";
 import { MenuType } from '@/types/MenuTypes';
-import { useAdmin } from "@/app/dashboard/AdminWrapper";
+import useAdminAccount from "@/stores/currentUserStore";
 import { usePathname } from "next/navigation";
 import { useProfile } from "@/stores/profileStore";
 
@@ -16,7 +16,7 @@ type Props = {
 } & MenuType;
 
 export default function Header({ area, isOpen, setOpen }: Props) {
-	const currentAdmin = useAdmin();
+	const {currentAdmin} = useAdminAccount();
 	
 	const { profile, updateProfile } = useProfile(currentAdmin.uid);
 

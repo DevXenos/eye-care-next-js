@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cls && next dev",
-    "build": "cls && next build",
-    "start": "cls && cross-env NODE_ENV=production next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production next start",
     "lint": "eslint",
     "firebase:start": "cls && cd firebase && firebase emulators:start --import=./data --export-on-exit=./data",
     "firebase:kill": "cls && npx kill-port 9099 8080"

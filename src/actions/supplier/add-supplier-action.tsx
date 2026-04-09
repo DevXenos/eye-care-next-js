@@ -1,8 +1,7 @@
 "use server"
 
-import admin from "@/libs/firebaseAdminConfig";
 import { SupplierType } from "@/types/SupplierTypes";
-import FormDataSerializer from "@/utils/FormDataSerializer";
+import admin from "@/libs/firebaseAdminConfig";
 import { generateSupplierId } from "@/utils/IdGenerator";
 
 export type SupplierFormData = Omit<SupplierType, 'id' | 'createdAt' | 'updatedAt'>;
@@ -11,22 +10,20 @@ type ReturnType =
 	| { success: true }
 	| { success: false; error: string };
 
-export default async function addSupplierAction(_: unknown, formData: FormData): Promise<ReturnType> {
+export default async function addSupplierAction(supplier: SupplierFormData): Promise<ReturnType> {
 	try {
 		const db = admin.firestore();
 
-		const data = FormDataSerializer.get<SupplierFormData>(formData);
+		const now = admin.firestore.Timestamp.now();
 
-		if (!data) throw new Error("Date is not set");
-
-		const supplier: SupplierType = {
+		const newSupplier: SupplierType = {
+			...supplier,
 			id: generateSupplierId(),
-			createdAt: admin.firestore.Timestamp.now(),
-			updatedAt: admin.firestore.Timestamp.now(),
-			...data
+			createdAt: now,
+			updatedAt: now,
 		};
 
-		await db.collection("suppliers").doc(supplier.id).set(supplier);
+		await db.collection("suppliers").doc(newSupplier.id).set(newSupplier, {merge: true});
 
 		return { success: true };
 	} catch (e) {

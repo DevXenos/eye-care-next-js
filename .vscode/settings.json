@@ -1,13 +1,14 @@
 {
 	"js/ts.tsdk.path": "node_modules\\typescript\\lib",
 	"files.exclude": {
-		"**/.git": false,
-		"**/.svn": false,
-		"**/.hg": false,
-		"**/.DS_Store": false,
-		"**/Thumbs.db": false,
-		"**/public": false,
-		"**/.next": false,
-		"**/node_modules": false
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/public": true,
+		"**/.next": true,
+		"**/node_modules": true,
+		// "**/firebase":true,
 	}
 }

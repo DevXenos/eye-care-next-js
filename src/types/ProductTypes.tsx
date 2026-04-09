@@ -1,5 +1,7 @@
 import { CreatedAt, Prefix, UpdatedAt } from "./UtilsType";
 
+import { Omit2 } from "./Omit2";
+
 export type ProductType = {
 	/**
 	 * Internal product identifier (string), e.g., "80000001"
@@ -62,4 +64,4 @@ export type ProductType = {
 	archive?: boolean;
 };
 
-export type ProductFormData = Omit<ProductType, 'createdAt' | 'updatedAt'>;
+export type ProductFormData = Omit2<ProductType, 'id' | 'createdAt' | 'updatedAt'>;

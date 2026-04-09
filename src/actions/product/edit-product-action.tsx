@@ -1,42 +1,29 @@
-"use server";
+"use server"
 
-import { COLLECTIONS } from "@/constants/keys";
-import admin from "@/libs/firebaseAdminConfig";
 import {
 	ProductFormData,
 	ProductType,
 } from "@/types/ProductTypes";
-import FormDataSerializer from "@/utils/FormDataSerializer";
+
+import { COLLECTIONS } from "@/constants/keys";
+import admin from "@/libs/firebaseAdminConfig";
 
 type ReturnType =
 	| { success: true }
 	| { success: false; error: string };
 
-export type EditFormData =
-	Partial<ProductFormData> &
-	Pick<ProductType, "id"> & Pick<ProductType, "createdAt">;
+export type EditFormData = Partial<ProductFormData>;
 
 export default async function editProductAction(
-	_: unknown,
-	formData: FormData
+	id: ProductType['id'],
+	product: EditFormData
 ): Promise<ReturnType> {
 	try {
 		const db = admin.firestore();
 
-		const data =
-			FormDataSerializer.get<EditFormData>(
-				formData
-			);
-
-		if (!data)
-			throw new Error("Invalid form data");
-
-		if (!data.id)
-			throw new Error("Product ID is required");
-
 		const productRef = db
 			.collection(COLLECTIONS.PRODUCTS)
-			.doc(data.id);
+			.doc(id);
 
 		const snapshot = await productRef.get();
 
@@ -46,13 +33,11 @@ export default async function editProductAction(
 		const now =
 			admin.firestore.Timestamp.now();
 
-		// ❌ Remove fields that must NEVER be updated
 		const {
-			id,
-			createdAt,
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			stockQuantity,
 			...safeData
-		} = data;
+		} = product;
 
 		const updateData = {
 			...safeData,

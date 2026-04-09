@@ -1,40 +1,26 @@
-import "client-only";
+"use client"
 
-import { User, onAuthStateChanged } from "firebase/auth";
+import React, { createContext, useContext } from "react";
 
-import { auth } from "@/libs/firebaseClientConfig";
-import { create } from "zustand";
-import { useEffect } from "react";
+import { AdminAccount } from "@/types/AdminAccountTypes";
 
-export type CurrentUserState = {
-	isLoading: boolean;
-	currentUser: User | null;
-	setCurrentUser: (user: User|null) => void;
+export type AdminAccountContextType = {
+	currentAdmin: AdminAccount;
 }
 
-export const currentUserStore = create<CurrentUserState>((set) => ({
-	isLoading: true,
-	currentUser: null,
-	setCurrentUser: (user) => set({
-		isLoading: false,
-		currentUser: user,
-	})
-}))
+export const AdminAccountContext = createContext<AdminAccountContextType | undefined>(undefined);
 
-export function useCurrentUser() {
-	const isLoading = currentUserStore.getState().isLoading;
-	const currentUser = currentUserStore.getState().currentUser;
-	const setCurrentUser = currentUserStore.getState().setCurrentUser;
+export function AdminAccountProvider({ children, currentAdmin }: { children: React.ReactNode, currentAdmin: AdminAccount }) {
 
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			setCurrentUser(user);
-		});
+	return (
+		<AdminAccountContext.Provider value={{ currentAdmin}}>
+			{children}
+		</AdminAccountContext.Provider>
+	)
+}
 
-		return () => {
-			unsubscribe();
-		}
-	});
-
-	return [currentUser, isLoading] as const;
+export default function useAdminAccount() {
+	const context = useContext(AdminAccountContext);
+	if (!context) throw new Error("useAdminAccount must be used in /dashboard/* only")
+	return context;
 }

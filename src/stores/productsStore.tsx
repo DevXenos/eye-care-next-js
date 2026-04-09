@@ -45,25 +45,24 @@ export const productStore = create<ProductStoreState>((set, get) => ({
 }))
 
 export function useProducts() {
-	const { setProducts, ...rest } = productStore.getState();
+	const setProducts = productStore((s) => s.setProducts);
+	const brands = productStore((s) => s.brands);
+	const categories = productStore((s) => s.categories);
+	const getProductById = productStore((s) => s.getProductById);
+	const products = productStore((s) => s.products);
 
 	useEffect(() => {
 		const q = query(collection(db, "products"));
-
 		const unsubscribe = onSnapshot(q, (snapshot) => {
-
 			const productList: ProductType[] = snapshot.docs.map((doc) => ({
 				// ...(doc.data() as Omit<ProductType, "id">),
 				...(doc.data() as ProductType),
 			}));
 
 			setProducts(productList);
-		}, (error) => {
-			console.error("Firestore error:", error);
 		});
-
 		return () => unsubscribe();
 	}, [setProducts]);
 
-	return { ...rest };
+	return { brands, categories, getProductById, products };
 }

@@ -1,11 +1,10 @@
 "use server";
 
-import FormDataSerializer from "@/utils/FormDataSerializer";
 import { SupplierType } from "@/types/SupplierTypes";
 import admin from "@/libs/firebaseAdminConfig";
 
-export type EditSupplierFormData =
-	Partial<Omit<SupplierType, "createdAt" | "updatedAt">> &
+export type EditSupplierFormData = 
+	Partial<Omit<SupplierType, "updatedAt">> &
 	Pick<SupplierType, "id">;
 
 type ReturnType =
@@ -13,26 +12,14 @@ type ReturnType =
 	| { success: false; error: string };
 
 export default async function editSupplierAction(
-	_: unknown,
-	formData: FormData
+	supplier: EditSupplierFormData
 ): Promise<ReturnType> {
 	try {
 		const db = admin.firestore();
 
-		const data =
-			FormDataSerializer.get<EditSupplierFormData>(
-				formData
-			);
-
-		if (!data)
-			throw new Error("Invalid form data");
-
-		if (!data.id)
-			throw new Error("Supplier ID is required");
-
 		const supplierRef = db
 			.collection("suppliers")
-			.doc(data.id);
+			.doc(supplier.id);
 
 		const snapshot =
 			await supplierRef.get();
@@ -45,7 +32,7 @@ export default async function editSupplierAction(
 
 		// Prevent updating restricted fields
 		const { ...safeData } =
-			data as EditSupplierFormData & {
+			supplier as EditSupplierFormData & {
 				createdAt?: unknown;
 			};
 

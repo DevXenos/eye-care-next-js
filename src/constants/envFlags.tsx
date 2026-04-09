@@ -3,6 +3,8 @@
  */
 export const __DEV__ = process.env.NODE_ENV === 'development';
 
+export const __PROD__ = process.env.NODE_ENV !== "development";
+
 /**
  * True if running only on this laptop
  */

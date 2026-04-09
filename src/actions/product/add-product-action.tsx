@@ -1,42 +1,33 @@
 "use server";
+
 import { COLLECTIONS } from "@/constants/keys";
+import { ProductType } from "@/types/ProductTypes";
 import admin from "@/libs/firebaseAdminConfig";
-import { ProductFormData, ProductType } from "@/types/ProductTypes";
 import { generateProductId } from "@/utils/IdGenerator";
 import { recordStockHistoryHelper } from "../stock-history/record-stock-history";
-import FormDataSerializer from "@/utils/FormDataSerializer";
 
 type ReturnType =
 	| { success: true }
 	| { success: false; error: string };
 
-export default async function addProductAction(_: unknown, formData: FormData): Promise<ReturnType> {
+export default async function addProductAction(product: Omit<ProductType, 'id'|"createdAt"|"updatedAt"|"archive">): Promise<ReturnType> {
 	try {
 		const db = admin.firestore();
 
-		const data = FormDataSerializer.get<ProductFormData>(formData);
-
-		if (!data) throw new Error("Data not exists");
-
-		const product: ProductType = {
+		const newProduct: ProductType = {
 			createdAt: admin.firestore.Timestamp.now(),
 			updatedAt: admin.firestore.Timestamp.now(),
+			...product,
 			id: generateProductId(),
-			barcode: data.barcode as ProductFormData['barcode'],
-			name: data.name,
-			category: data.category,
-			brand: data.brand,
-			price: Number(data.price),
-			stockQuantity: Number(data.stockQuantity)
 		}
 
-		const setProductPromise = db.collection(COLLECTIONS.PRODUCTS).doc(product.id).set(product);
+		const setProductPromise = db.collection(COLLECTIONS.PRODUCTS).doc(newProduct.id).set(newProduct);
 
 		await Promise.all([
 			setProductPromise,
 			recordStockHistoryHelper({
-				productId: product.id,
-				quantity: product.stockQuantity,
+				productId: newProduct.id,
+				quantity: newProduct.stockQuantity,
 				source: {
 					type: "manual",
 					note: "Initial Stock"

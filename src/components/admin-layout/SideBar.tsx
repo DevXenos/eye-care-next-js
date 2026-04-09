@@ -74,7 +74,6 @@ export default function SideBar({ area, isOpen }: { area: string; } & MenuType) 
 				whiteSpace: "nowrap"
 			}}>
 				<Typography
-					variant="h6"
 					fontWeight={800}
 					color="primary"
 					sx={{ transition: "opacity 0.2s", opacity: 1 }}

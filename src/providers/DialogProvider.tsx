@@ -1,21 +1,21 @@
 "use client";
 
 import {
+	Breakpoint,
+	Button,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Fade,
+	Dialog as MUIDialog,
+} from "@mui/material";
+import {
+	ReactNode,
 	createContext,
+	useCallback,
 	useContext,
 	useState,
-	ReactNode,
-	useCallback,
 } from "react";
-import {
-	Breakpoint,
-	Dialog as MUIDialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	Button,
-	Fade,
-} from "@mui/material";
 
 /* ================================
    Types
@@ -56,6 +56,9 @@ export const DialogContext = createContext<DialogContextType | undefined>(undefi
    Provider
 ================================ */
 
+/**
+ * @deprecated {Converting to advance DialogProvider}
+ */
 export function DialogProvider({ children }: { children: ReactNode }) {
 	const [dialogs, setDialogs] = useState<Dialog[]>([]);
 
@@ -156,6 +159,9 @@ export function DialogProvider({ children }: { children: ReactNode }) {
    Hook
 ================================ */
 
+/**
+ * @deprecated {Converting to advance DialogProvider}
+ */
 export function useDialog() {
 	const context = useContext(DialogContext);
 	if (!context) throw new Error("useDialog must be used inside DialogProvider");
@@ -166,6 +172,9 @@ export function useDialog() {
    Dialog Renderer
 ================================ */
 
+/**
+ * @deprecated {Converting to advance DialogProvider}
+ */
 export const DialogRenderer = () => {
 	const { dialogs, closeDialog } = useDialog();
 

@@ -19,7 +19,8 @@ export const salesReportStore = create<SalesReportStoreState>((set) => ({
 }));
 
 export function useSalesReport() {
-	const { sales, setSales } = salesReportStore.getState();
+	const sales = salesReportStore((s) => s.sales);
+	const setSales = salesReportStore((s) => s.setSales);
 
 	useEffect(() => {
 		const q = query(collection(db, COLLECTIONS.SALES_REPORT));
